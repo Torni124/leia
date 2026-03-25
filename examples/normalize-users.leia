@@ -1,0 +1,33 @@
+job NormalizeUsers
+target python cli
+
+inputs:
+  sourcePath: string
+  outputPath: string
+
+outputs:
+  exitCode: int
+
+rules:
+  read a JSON array of user records from sourcePath
+  trim whitespace from names and emails
+  lowercase email addresses
+  drop duplicate users by email keeping the first occurrence
+  write normalized users to outputPath
+
+constraints:
+  use only the Python standard library
+  preserve input order for retained records
+  do not modify the source file
+
+preferences:
+  prefer simple data transformation helpers
+
+flex:
+  duplicate tracking implementation
+  output formatting details
+
+tests:
+  surrounding whitespace is removed from names
+  emails are lowercased
+  duplicate emails are removed after normalization

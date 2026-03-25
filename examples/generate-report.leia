@@ -1,0 +1,38 @@
+job GenerateReport
+target python cli
+
+inputs:
+  sourcePath: string
+  outputPath: string
+  includeInactive: bool = false
+
+outputs:
+  exitCode: int
+  reportPath: string
+
+rules:
+  read records from sourcePath
+  validate each record before including it in the report
+  group records by status
+  write a summary report to outputPath
+  return a non-zero exitCode when input cannot be read
+
+constraints:
+  use only the Python standard library
+  do not modify the input file
+  overwrite outputPath only after successful report generation
+
+preferences:
+  prefer small pure helper functions
+  prefer explicit error messages
+
+flex:
+  internal function names
+  report formatting details
+  grouping implementation strategy
+
+tests:
+  missing input file returns non-zero exitCode
+  valid input writes report to outputPath
+  inactive records are excluded by default
+  includeInactive=true includes inactive records

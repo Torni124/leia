@@ -1,0 +1,4 @@
+node_modules/
+dist/
+.tmp/
+python_eval/generate_json_report/.tmp/

@@ -1,0 +1,42 @@
+job GenerateJsonReport
+target python cli
+
+inputs:
+  sourcePath: string
+  outputPath: string
+  includeInactive: bool = false
+
+outputs:
+  exitCode: int
+  reportPath: string
+
+rules:
+  export a function generate_report(source_path: str, output_path: str, include_inactive: bool = False) -> int
+  support CLI usage as python script_under_test.py <sourcePath> <outputPath> [--include-inactive]
+  read a JSON array of records from sourcePath
+  validate each record has id, name, and status fields
+  exclude records with status inactive unless includeInactive is true
+  write a JSON report to outputPath with total_records, included_records, status_counts, and records fields
+  return exitCode 0 on success
+  return a non-zero exitCode when input cannot be read or validated
+
+constraints:
+  use only the Python standard library
+  do not modify the input file
+  only write outputPath after successful report generation
+
+preferences:
+  prefer small pure helper functions
+  prefer explicit error handling
+
+flex:
+  internal helper names
+  record validation decomposition
+  CLI argument parsing structure
+
+tests:
+  missing input file returns non-zero exitCode
+  invalid input record returns non-zero exitCode
+  inactive records are excluded by default
+  includeInactive=true includes inactive records
+  successful runs write the expected JSON summary structure

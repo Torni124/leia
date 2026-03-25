@@ -1,0 +1,25 @@
+endpoint GetUser
+target python fastapi
+
+inputs:
+  id: uuid
+
+outputs:
+  response: User | NotFound
+
+rules:
+  fetch user by id
+  return not found when user missing
+  require auth
+
+constraints:
+  no raw SQL
+  use async
+
+flex:
+  query decomposition
+  serializer structure
+
+tests:
+  missing user returns not found
+  valid user returns user record

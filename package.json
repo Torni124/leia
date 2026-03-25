@@ -1,0 +1,30 @@
+{
+  "name": "leia",
+  "version": "0.1.0",
+  "description": "AI-first intent specification language tooling for Leia .leia files.",
+  "license": "MIT",
+  "type": "commonjs",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "bin": {
+    "leia": "dist/src/cli.js"
+  },
+  "files": [
+    "dist/**/*",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "build:editor": "npm --prefix packages/leia-language-server run build && npm --prefix packages/leia-vscode run build",
+    "check": "tsc -p tsconfig.json --noEmit",
+    "check:editor": "npm --prefix packages/leia-language-server run check && npm --prefix packages/leia-vscode run check",
+    "package:vscode": "npm --prefix packages/leia-vscode run package:vsix",
+    "test": "npm run build && node dist/test/parser.test.js && node dist/test/validator.test.js && node dist/test/formatter.test.js && node dist/test/completion.test.js && node dist/test/lsp.test.js && node dist/test/prompt.test.js && node dist/test/handoff.test.js && node dist/test/python-harness.test.js",
+    "test:python-harness": "python -m unittest discover -s python_eval/generate_json_report/tests -p test_*.py",
+    "compare:python-runs": "powershell -ExecutionPolicy Bypass -File scripts/compare-python-runs.ps1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.8.0"
+  }
+}

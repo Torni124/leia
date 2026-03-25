@@ -1,0 +1,81 @@
+{
+  "name": "leia-language",
+  "displayName": "Leia",
+  "description": "Syntax highlighting, diagnostics, and formatting for Leia .leia files.",
+  "version": "0.1.1",
+  "publisher": "BodieOrni",
+  "license": "MIT",
+  "preview": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Torni124/leia"
+  },
+  "bugs": {
+    "url": "https://github.com/Torni124/leia/issues"
+  },
+  "homepage": "https://github.com/Torni124/leia",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "keywords": [
+    "leia",
+    "intent-spec",
+    "llm",
+    "dsl",
+    "language-server"
+  ],
+  "activationEvents": [
+    "onLanguage:leia"
+  ],
+  "main": "./dist/extension.js",
+  "files": [
+    "dist/**/*",
+    "server-dist/**/*",
+    "language-configuration.json",
+    "syntaxes/**/*",
+    "README.md",
+    "LICENSE.txt"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "leia",
+        "aliases": [
+          "Leia",
+          "leia"
+        ],
+        "extensions": [
+          ".leia"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "leia",
+        "scopeName": "source.leia",
+        "path": "./syntaxes/leia.tmLanguage.json"
+      }
+    ]
+  },
+  "scripts": {
+    "build:server": "npm --prefix ../leia-language-server run build && node ./scripts/sync-language-server.cjs",
+    "build": "npm run build:server && tsc -p tsconfig.json",
+    "check": "tsc -p tsconfig.json --noEmit",
+    "package:vsix": "npm run build && vsce package"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1",
+    "vscode-languageserver": "^9.0.0",
+    "vscode-languageserver-textdocument": "^1.0.11"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^3.6.2",
+    "@types/node": "^24.0.0",
+    "@types/vscode": "^1.90.0",
+    "typescript": "^5.8.0"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "scopeName": "source.leia",
+  "name": "Leia",
+  "patterns": [
+    {
+      "match": "^\\s*#.*$",
+      "name": "comment.line.number-sign.leia"
+    },
+    {
+      "match": "^\\s*(component|endpoint|job|module)\\b",
+      "name": "keyword.control.root.leia"
+    },
+    {
+      "match": "^\\s*target\\b",
+      "name": "keyword.control.target.leia"
+    },
+    {
+      "match": "^\\s*(inputs|state|outputs|rules|constraints|preferences|flex|tests|imports)(:)",
+      "captures": {
+        "1": {
+          "name": "keyword.control.section.leia"
+        },
+        "2": {
+          "name": "punctuation.separator.key-value.leia"
+        }
+      }
+    },
+    {
+      "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b(?=\\s*:)",
+      "name": "variable.other.field.leia"
+    }
+  ],
+  "uuid": "44f90b24-5f33-4e58-8ee1-3c48046935a6"
+}

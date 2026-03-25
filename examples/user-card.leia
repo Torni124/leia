@@ -1,0 +1,37 @@
+component UserCard
+target react typescript
+
+inputs:
+  user: User
+  onSelect: fn(id: string) -> void
+
+state:
+  expanded: bool = false
+
+outputs:
+  render: JSX.Element
+
+rules:
+  show avatar, name, and email
+  clicking card calls onSelect(user.id)
+  clicking expand toggles expanded
+  if expanded show recent activity
+
+constraints:
+  no external dependencies
+  use functional components
+  tailwind only
+
+preferences:
+  prefer small helper functions
+  prefer pure derived values
+
+flex:
+  helper names
+  internal decomposition
+  memoization strategy
+
+tests:
+  clicking card calls onSelect once
+  collapsed state hides activity
+  expanded state shows activity

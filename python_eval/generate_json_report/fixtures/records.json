@@ -1,0 +1,17 @@
+[
+  {
+    "id": "u1",
+    "name": "Ada",
+    "status": "active"
+  },
+  {
+    "id": "u2",
+    "name": "Grace",
+    "status": "inactive"
+  },
+  {
+    "id": "u3",
+    "name": "Linus",
+    "status": "pending"
+  }
+]
