@@ -4,8 +4,8 @@ Leia is a working name for an AI-first specification language for describing sof
 
 This repository implements a real language-toolchain foundation rather than a prompt wrapper:
 
-- a hand-written indentation-aware lexer
-- a hand-written parser
+- an indentation-aware lexer
+- a parser
 - typed AST nodes with source spans
 - semantic validation with stable diagnostic codes
 - a formatter
@@ -144,7 +144,7 @@ This keeps the parser readable while still producing enough structure for diagno
 
 ### Parser
 
-The parser is hand-written and line-oriented because the current grammar is block-based and indentation-sensitive.
+The parser is line-oriented because the current grammar is block-based and indentation-sensitive.
 
 Key choices:
 
