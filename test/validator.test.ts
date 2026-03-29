@@ -53,3 +53,22 @@ inputs:
     true
   );
 });
+
+test("does not warn when flex is omitted", () => {
+  const source = `component UserCard
+target react typescript
+
+rules:
+  show avatar
+
+tests:
+  renders avatar
+`;
+  const parsed = parseSource(source);
+  const diagnostics = validateSourceFile(parsed.sourceFile);
+
+  assert.equal(
+    diagnostics.some((diagnostic) => diagnostic.code === "semantic.missing_flex"),
+    false
+  );
+});

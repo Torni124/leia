@@ -104,7 +104,6 @@ export function validateSourceFile(
   const hasRules = sectionsByKind.has("rules");
   const hasConstraints = sectionsByKind.has("constraints");
   const hasPreferences = sectionsByKind.has("preferences");
-  const hasFlex = sectionsByKind.has("flex");
   const hasTests = sectionsByKind.has("tests");
 
   if (!hasTests) {
@@ -113,15 +112,6 @@ export function validateSourceFile(
       "No `tests` section is defined.",
       root.span,
       { fixHint: "Add acceptance criteria in a `tests:` block." }
-    );
-  }
-
-  if (!hasFlex) {
-    diagnostics.warning(
-      "semantic.missing_flex",
-      "No `flex` section is defined.",
-      root.span,
-      { fixHint: "Add a `flex:` block to mark intentionally AI-decided areas." }
     );
   }
 

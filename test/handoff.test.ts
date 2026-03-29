@@ -45,9 +45,30 @@ test("writes a complete handoff file", () => {
     const handoffText = readFileSync(outPath, "utf8");
 
     assert.equal(writtenPath, outPath);
-    assert.match(handoffText, /You are a coding model implementing software from a Leia spec\./);
+    assert.match(handoffText, /You are a coding model implementing a job from a strict compiled Leia contract\./);
     assert.match(handoffText, /Generate exactly one `\.py` file named `script_under_test\.py`\./);
-    assert.match(handoffText, /Leia spec:\njob GenerateJsonReport/);
+    assert.match(handoffText, /Required Behavior:\n1\. export a function generate_report/);
+    assert.doesNotMatch(handoffText, /Leia spec:/);
+  } finally {
+    rmSync(tempRoot, { recursive: true, force: true });
+  }
+});
+
+test("writes a styled handoff file when requested", () => {
+  const workspaceTempRoot = resolve(".tmp");
+  mkdirSync(workspaceTempRoot, { recursive: true });
+  const tempRoot = mkdtempSync(join(workspaceTempRoot, "leia-handoff-style-"));
+
+  try {
+    const specPath = join(tempRoot, "generate-json-report.leia");
+    const outPath = join(tempRoot, "handoff.txt");
+    const sourceFile = parseSource(pythonCliSpec).sourceFile;
+
+    writeHandoffFile(sourceFile, specPath, { outFile: outPath, style: "strict" });
+
+    const handoffText = readFileSync(outPath, "utf8");
+    assert.match(handoffText, /Priority Order:/);
+    assert.match(handoffText, /Forbidden Failure Modes:/);
   } finally {
     rmSync(tempRoot, { recursive: true, force: true });
   }

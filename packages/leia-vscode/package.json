@@ -2,10 +2,11 @@
   "name": "leia-language",
   "displayName": "Leia",
   "description": "Syntax highlighting, diagnostics, and formatting for Leia .leia files.",
-  "version": "0.1.1",
+  "version": "0.1.7",
   "publisher": "BodieOrni",
   "license": "MIT",
   "preview": true,
+  "icon": "media/icon.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/Torni124/leia"
@@ -28,11 +29,15 @@
     "language-server"
   ],
   "activationEvents": [
-    "onLanguage:leia"
+    "onLanguage:leia",
+    "onCommand:leia.showStatus",
+    "onStartupFinished"
   ],
   "main": "./dist/extension.js",
   "files": [
     "dist/**/*",
+    "media/icon.png",
+    "node_modules/**/*",
     "server-dist/**/*",
     "language-configuration.json",
     "syntaxes/**/*",
@@ -40,6 +45,12 @@
     "LICENSE.txt"
   ],
   "contributes": {
+    "commands": [
+      {
+        "command": "leia.showStatus",
+        "title": "Leia: Show Status"
+      }
+    ],
     "languages": [
       {
         "id": "leia",
