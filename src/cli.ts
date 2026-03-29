@@ -6,10 +6,14 @@ import { analyzeSource } from "./analyze";
 import { formatDiagnostic, hasErrors } from "./diagnostics";
 import { formatSourceFile } from "./formatter";
 import { getDefaultHandoffPath, writeHandoffFile } from "./handoff";
-import { renderPrompt } from "./prompt";
+import { PROMPT_STYLES, isPromptStyle, renderPrompt, type PromptStyle } from "./prompt";
 
-function main(argv: readonly string[]): number {
+export function main(argv: readonly string[]): number {
   const [command, ...rest] = argv;
+
+  if (command && looksLikeLeiaFilePath(command)) {
+    return runHandoff(argv);
+  }
 
   switch (command) {
     case "check":
@@ -32,6 +36,10 @@ function main(argv: readonly string[]): number {
       printHelp();
       return 1;
   }
+}
+
+function looksLikeLeiaFilePath(value: string): boolean {
+  return value.toLowerCase().endsWith(".leia");
 }
 
 function runCheck(args: readonly string[]): number {
@@ -95,7 +103,12 @@ function runFormat(args: readonly string[]): number {
 }
 
 function runPrompt(args: readonly string[]): number {
-  const filePath = requireFilePath(args);
+  const { filePath, includeSourceAppendix, style, error } = parsePromptArgs(args);
+
+  if (error) {
+    process.stderr.write(`${error}\n`);
+    return 1;
+  }
 
   if (!filePath) {
     return 1;
@@ -111,12 +124,22 @@ function runPrompt(args: readonly string[]): number {
     return 1;
   }
 
-  process.stdout.write(`${renderPrompt(analysis.sourceFile)}\n`);
+  process.stdout.write(
+    `${renderPrompt(analysis.sourceFile, {
+      style,
+      includeSourceAppendix
+    })}\n`
+  );
   return 0;
 }
 
 function runHandoff(args: readonly string[]): number {
-  const { filePath, outFile } = parseFileAndOutArgs(args);
+  const { filePath, outFile, includeSourceAppendix, style, error } = parsePromptArgs(args);
+
+  if (error) {
+    process.stderr.write(`${error}\n`);
+    return 1;
+  }
 
   if (!filePath) {
     process.stderr.write("Expected a file path.\n");
@@ -139,7 +162,11 @@ function runHandoff(args: readonly string[]): number {
   }
 
   const resolvedOutFile = outFile ? resolve(outFile) : getDefaultHandoffPath(absolutePath);
-  writeHandoffFile(analysis.sourceFile, absolutePath, { outFile: resolvedOutFile });
+  writeHandoffFile(analysis.sourceFile, absolutePath, {
+    outFile: resolvedOutFile,
+    includeSourceAppendix,
+    style
+  });
   process.stdout.write(`${resolvedOutFile}\n`);
   return 0;
 }
@@ -155,15 +182,56 @@ function requireFilePath(args: readonly string[]): string | null {
   return filePath;
 }
 
-function parseFileAndOutArgs(args: readonly string[]): { filePath: string | null; outFile: string | null } {
+function parsePromptArgs(args: readonly string[]): {
+  filePath: string | null;
+  outFile: string | null;
+  includeSourceAppendix: boolean;
+  style: PromptStyle;
+  error: string | null;
+} {
   let filePath: string | null = null;
   let outFile: string | null = null;
+  let includeSourceAppendix = false;
+  let style: PromptStyle = "strict";
 
   for (let index = 0; index < args.length; index += 1) {
     const value = args[index];
 
+    if (value === "--with-source") {
+      includeSourceAppendix = true;
+      continue;
+    }
+
     if (value === "--out") {
       outFile = args[index + 1] ?? null;
+      index += 1;
+      continue;
+    }
+
+    if (value === "--style") {
+      const candidate = args[index + 1];
+
+      if (!candidate) {
+        return {
+          filePath,
+          outFile,
+          includeSourceAppendix,
+          style,
+          error: "Expected a prompt style after --style."
+        };
+      }
+
+      if (!isPromptStyle(candidate)) {
+        return {
+          filePath,
+          outFile,
+          includeSourceAppendix,
+          style,
+          error: `Unknown prompt style: ${candidate}. Expected one of: ${PROMPT_STYLES.join(", ")}.`
+        };
+      }
+
+      style = candidate;
       index += 1;
       continue;
     }
@@ -173,7 +241,7 @@ function parseFileAndOutArgs(args: readonly string[]): { filePath: string | null
     }
   }
 
-  return { filePath, outFile };
+  return { filePath, outFile, includeSourceAppendix, style, error: null };
 }
 
 function emitDiagnostics(diagnostics: readonly Diagnostic[], filePath: string): void {
@@ -185,13 +253,16 @@ function emitDiagnostics(diagnostics: readonly Diagnostic[], filePath: string): 
 function printHelp(): void {
   process.stdout.write(
     [
+      "leia <file.leia>                           # write a sibling .prompt.txt handoff file",
       "leia check <file>",
       "leia ast <file>",
       "leia format <file> [--write]",
-      "leia prompt <file>",
-      "leia handoff <file> [--out <file>]"
+      `leia prompt <file> [--style <${PROMPT_STYLES.join("|")}>] [--with-source]`,
+      `leia handoff <file> [--out <file>] [--style <${PROMPT_STYLES.join("|")}>] [--with-source]`
     ].join("\n") + "\n"
   );
 }
 
-process.exitCode = main(process.argv.slice(2));
+if (require.main === module) {
+  process.exitCode = main(process.argv.slice(2));
+}

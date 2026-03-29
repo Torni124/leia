@@ -12,6 +12,22 @@ This repository implements a real language-toolchain foundation rather than a pr
 - a CLI for checking, AST inspection, and formatting
 - tests for parser, validator, and formatter behavior
 
+## Quick Start
+
+Install from GitHub:
+
+```bash
+npm install -g github:Torni124/leia
+```
+
+Generate a prompt file from a Leia spec:
+
+```bash
+leia path/to/file.leia
+```
+
+That writes `path/to/file.prompt.txt` beside the spec.
+
 ## What Leia Looks Like
 
 ```leia
@@ -87,6 +103,8 @@ Supported section kinds:
 
 - field sections: `inputs`, `state`, `outputs`
 - text sections: `rules`, `constraints`, `preferences`, `flex`, `tests`, `imports`
+
+`flex` is optional. Unspecified details are flexible by default; an explicit `flex:` block is only for calling out areas where model discretion is especially intended.
 
 Field entries:
 
@@ -166,7 +184,6 @@ Current semantic checks include:
 - duplicate field names inside field sections
 - empty `rules`, `constraints`, or `tests` sections
 - warning when `tests` is missing
-- warning when `flex` is missing
 - warning when constraints exist without tests
 - warning when preferences exist without rules
 
@@ -233,6 +250,39 @@ That delegates to `packages/leia-vscode` and produces a `.vsix` file there, read
 
 ## CLI
 
+## Install
+
+From GitHub, the easiest install is:
+
+```bash
+npm install -g github:Torni124/leia
+```
+
+That installs the CLI as `leia`.
+
+If you want a local editable checkout instead:
+
+```bash
+git clone https://github.com/Torni124/leia.git
+cd leia
+npm install
+npm link
+```
+
+After either install path, the shortest spec-to-prompt flow is:
+
+```bash
+leia path/to/file.leia
+```
+
+That validates the spec and writes `path/to/file.prompt.txt` beside it.
+
+If you do not want a global install, you can also run it directly from a clone:
+
+```bash
+node dist/src/cli.js path/to/file.leia
+```
+
 Build first:
 
 ```bash
@@ -243,30 +293,54 @@ npm run build
 Commands:
 
 ```bash
+leia path/to/file.leia
 leia check path/to/file.leia
 leia ast path/to/file.leia
 leia format path/to/file.leia
 leia format path/to/file.leia --write
 leia prompt path/to/file.leia
+leia prompt path/to/file.leia --style strict
+leia prompt path/to/file.leia --style acceptance
+leia prompt path/to/file.leia --with-source
 leia handoff path/to/file.leia
 leia handoff path/to/file.leia --out path/to/file.prompt.txt
+leia handoff path/to/file.leia --style strict
+leia handoff path/to/file.leia --style acceptance
+leia handoff path/to/file.leia --with-source
 ```
 
 Behavior:
 
+- `leia path/to/file.leia` is the shortest path: it validates the spec and writes a sibling `path/to/file.prompt.txt`
 - `check` parses and validates, prints diagnostics, exits non-zero on errors
 - `ast` prints the AST as JSON and also emits diagnostics
 - `format` prints formatted output or overwrites the file with `--write`
-- `prompt` prints a model-ready handoff prompt with the formatted Leia spec embedded
-- `handoff` writes a complete model-ready prompt file to disk and prints the output path
+- `prompt` prints a compiled model-facing implementation brief derived from the Leia AST
+- `handoff` writes that compiled brief to disk and prints the output path
+- `--style` selects a prompt compiler variant: `strict` or `acceptance`
+- `--with-source` appends a source appendix when you want the compiled brief plus a readable Leia rendering
 
 Example:
 
 ```bash
+leia examples/generate-json-report.leia
 leia prompt examples/generate-json-report.leia
 ```
 
-That command is the easiest way to stop copying a wrapper prompt by hand. You can pipe its output directly into another tool or paste the rendered result into a coding model.
+That command compiles the Leia file into a model-facing brief instead of just wrapping the raw `.leia` text. You can pipe its output directly into another tool or paste the rendered result into a coding model.
+
+If you just want a prompt file as quickly as possible, use only the file path:
+
+```bash
+leia examples/generate-json-report.leia
+```
+
+That writes `examples/generate-json-report.prompt.txt` next to the spec using the default `strict` style.
+
+Prompt styles:
+
+- `strict`: default style, with stronger priority ordering and explicit forbidden failure modes
+- `acceptance`: puts the acceptance criteria first and treats them as the completion gate
 
 If you do not want any manual pasting at all, use:
 
@@ -274,7 +348,7 @@ If you do not want any manual pasting at all, use:
 leia handoff examples/generate-json-report.leia
 ```
 
-That writes a sibling file such as `examples/generate-json-report.prompt.txt` containing everything the coding model needs.
+That writes a sibling file such as `examples/generate-json-report.prompt.txt` containing the compiled implementation brief the coding model needs.
 
 For Python CLI specs, the generated handoff prompt now explicitly requests a `.py` file named `script_under_test.py`.
 
