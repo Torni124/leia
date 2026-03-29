@@ -21,7 +21,7 @@ tests:
   valid input writes output file
 `;
 
-test("treats a bare .leia file path as a handoff command", () => {
+test("treats a bare .leia file path as a handoff command", async () => {
   const workspaceTempRoot = resolve(".tmp");
   mkdirSync(workspaceTempRoot, { recursive: true });
   const tempRoot = mkdtempSync(join(workspaceTempRoot, "leia-cli-"));
@@ -46,7 +46,7 @@ test("treats a bare .leia file path as a handoff command", () => {
     const outPath = join(tempRoot, "generate-json-report.prompt.txt");
     writeFileSync(specPath, validSpec, "utf8");
 
-    const exitCode = main([specPath]);
+    const exitCode = await main([specPath]);
 
     assert.equal(exitCode, 0);
     assert.equal(stderrChunks.join(""), "");

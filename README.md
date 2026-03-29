@@ -28,6 +28,15 @@ leia path/to/file.leia
 
 That writes `path/to/file.prompt.txt` beside the spec.
 
+Generate code directly with Anthropic:
+
+```bash
+set ANTHROPIC_API_KEY=your_key_here
+leia generate path/to/file.leia
+```
+
+That writes a generated artifact beside the spec, such as `path/to/file.generated.py`.
+
 ## VS Code Extension
 
 Leia also has a VS Code extension for `.leia` files.
@@ -329,6 +338,9 @@ leia check path/to/file.leia
 leia ast path/to/file.leia
 leia format path/to/file.leia
 leia format path/to/file.leia --write
+leia generate path/to/file.leia
+leia generate path/to/file.leia --out path/to/output.py
+leia generate path/to/file.leia --model claude-sonnet-4-20250514
 leia prompt path/to/file.leia
 leia prompt path/to/file.leia --style strict
 leia prompt path/to/file.leia --style acceptance
@@ -346,15 +358,24 @@ Behavior:
 - `check` parses and validates, prints diagnostics, exits non-zero on errors
 - `ast` prints the AST as JSON and also emits diagnostics
 - `format` prints formatted output or overwrites the file with `--write`
+- `generate` sends the compiled brief to Anthropic and writes the returned artifact to disk
 - `prompt` prints a compiled model-facing implementation brief derived from the Leia AST
 - `handoff` writes that compiled brief to disk and prints the output path
 - `--style` selects a prompt compiler variant: `strict` or `acceptance`
 - `--with-source` appends a source appendix when you want the compiled brief plus a readable Leia rendering
 
+Anthropic generation:
+
+- `generate` uses `ANTHROPIC_API_KEY` for authentication
+- default model: `claude-sonnet-4-20250514`
+- default max tokens: `16384`
+- default output path is inferred from the target, for example `*.generated.py` for `python`
+
 Example:
 
 ```bash
 leia examples/generate-json-report.leia
+leia generate examples/generate-json-report.leia
 leia prompt examples/generate-json-report.leia
 ```
 

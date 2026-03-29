@@ -3,6 +3,7 @@ export * from "./ast";
 export * from "./completion";
 export * from "./diagnostics";
 export * from "./formatter";
+export * from "./generate";
 export * from "./handoff";
 export * from "./language";
 export * from "./lexer";
