@@ -28,6 +28,36 @@ leia path/to/file.leia
 
 That writes `path/to/file.prompt.txt` beside the spec.
 
+## VS Code Extension
+
+Leia also has a VS Code extension for `.leia` files.
+
+Install from the Marketplace:
+
+```bash
+code --install-extension BodieOrni.leia-language
+```
+
+You can also search for `Leia` in the VS Code Extensions view.
+
+Current extension features:
+
+- `.leia` file association
+- syntax highlighting
+- live diagnostics
+- completion for root kinds, `target`, and top-level section headers
+- document formatting
+- `Leia: Show Status` command for language-server troubleshooting
+
+If you want to install from this repository instead of the Marketplace:
+
+```bash
+npm run package:vscode
+code --install-extension packages/leia-vscode/<generated-vsix-file>.vsix
+```
+
+The extension package lives under [packages/leia-vscode](/C:/Users/tbodi/leia/packages/leia-vscode).
+
 ## What Leia Looks Like
 
 ```leia
@@ -226,7 +256,8 @@ The VS Code extension currently provides:
 
 - `.leia` file association
 - basic syntax highlighting
-- language-server startup
+- diagnostics, completion, and formatting through the bundled language server
+- `Leia: Show Status` for extension/server troubleshooting
 
 Local dev flow:
 
@@ -247,8 +278,6 @@ npm run package:vscode
 ```
 
 That delegates to `packages/leia-vscode` and produces a `.vsix` file there, ready for local installation with `code --install-extension`.
-
-## CLI
 
 ## Install
 
@@ -282,6 +311,8 @@ If you do not want a global install, you can also run it directly from a clone:
 ```bash
 node dist/src/cli.js path/to/file.leia
 ```
+
+## CLI
 
 Build first:
 
